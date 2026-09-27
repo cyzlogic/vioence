@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>violence.cc</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23000000'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23ffffff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- snow overlay -->
+  <div id="snow" aria-hidden="true"></div>
+
+  <!-- mascot layer -->
+  <div class="mascot-layer" id="mascot" aria-hidden="true">
+    <img src="MASCOT1.png" alt="mascot" class="mascot-img" />
+  </div>
+
+  <!-- homepage hub screen -->
+  <div id="hub-container">
+    <main class="stage">
+      <h1 class="violence-title">VIOLENCE</h1>
+      <div class="hub-nav">
+        <button id="nav-btn-logic" class="hub-btn" type="button">logic</button>
+        <button id="nav-btn-homicide" class="hub-btn" type="button">homicide</button>
+        <button id="nav-btn-elijah" class="hub-btn" type="button">elijah</button>
+      </div>
+    </main>
+
+    <!-- minimalist fatal-style footer -->
+    <footer class="foot">
+      <p class="foot-brand">VIOLENCE.CC</p>
+      <p class="foot-alias">~ logic</p>
+      <p class="foot-copy">© 2026</p>
+    </footer>
+  </div>
+
+  <!-- logic biolink screen -->
+  <div id="biolink-container" aria-hidden="true">
+    <video id="biolink-video" class="biolink-video-bg" autoplay loop muted playsinline poster="dubai-bg.jpg">
+      <source src="dubai-bg.mp4" type="video/mp4" />
+    </video>
+    <div class="biolink-bg-overlay"></div>
+
+    <div class="biolink-card" id="biolink-card">
+      <button id="biolink-close" class="biolink-back-btn" type="button" title="Back" aria-label="Back">✕</button>
+
+      <!-- Profile Header -->
+      <div class="biolink-profile">
+        <div class="biolink-avatar" aria-label="Avatar">
+          <img src="logicpfp.png" alt="Logic" class="biolink-avatar-img" />
+        </div>
+        <div class="biolink-info">
+          <h1 class="biolink-name shining-text">LOGIC</h1>
+          <p class="biolink-sub">Joined over 2 years ago</p>
+        </div>
+      </div>
+
+      <!-- Footer Metadata -->
+      <div class="biolink-meta">
+        <div class="biolink-meta-item">
+          <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+          <span id="glitch-views-count" class="glitch-views">999</span>
+        </div>
+        <div class="biolink-meta-item">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+          <span>violence.cc</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- mute toggle button on bottom right -->
+  <button id="mute-btn" class="mute-btn" type="button" aria-label="Toggle mute" title="Mute / Unmute">
+    <svg id="icon-sound" class="mute-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+    </svg>
+    <svg id="icon-muted" class="mute-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <line x1="23" y1="9" x2="17" y2="15"></line>
+      <line x1="17" y1="9" x2="23" y2="15"></line>
+    </svg>
+  </button>
+
+  <!-- hidden audio player -->
+  <iframe id="audio" class="ghost" title="audio"
+    allow="autoplay; encrypted-media"
+    src="https://w.soundcloud.com/player/?visual=false&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F775731544&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&sharing=false&download=false&show_playcount=false">
+  </iframe>
+
+  <!-- SoundCloud Widget API -->
+  <script src="sc-api.js"></script>
+  <script>
+    var hubContainer = document.getElementById("hub-container");
+    var mascotLayer = document.getElementById("mascot");
+    var biolinkContainer = document.getElementById("biolink-container");
+    var biolinkCloseBtn = document.getElementById("biolink-close");
+    var biolinkVideo = document.getElementById("biolink-video");
+
+    function openBiolink() {
+      hubContainer.classList.add("page-hidden");
+      if (mascotLayer) mascotLayer.classList.add("dimmed");
+      biolinkContainer.classList.add("active");
+      biolinkContainer.setAttribute("aria-hidden", "false");
+      if (biolinkVideo) {
+        biolinkVideo.currentTime = 0;
+        biolinkVideo.play().catch(function () {});
+      }
+      startGlitchViews();
+    }
+
+    function closeBiolink() {
+      biolinkContainer.classList.remove("active");
+      biolinkContainer.setAttribute("aria-hidden", "true");
+      hubContainer.classList.remove("page-hidden");
+      if (mascotLayer) mascotLayer.classList.remove("dimmed");
+      if (biolinkVideo) {
+        biolinkVideo.pause();
+      }
+      stopGlitchViews();
+    }
+
+    if (biolinkCloseBtn) {
+      biolinkCloseBtn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        closeBiolink();
+      });
+    }
+
+    window.addEventListener("keydown", function(e) {
+      if (e.key === "Escape" && biolinkContainer.classList.contains("active")) {
+        closeBiolink();
+      }
+    });
+
+    // Support URL param ?view=biolink or ?logic for direct screenshotting/linking
+    if (new URLSearchParams(window.location.search).has("biolink") || new URLSearchParams(window.location.search).has("logic")) {
+      openBiolink();
+    }
+
+    // 3D tilt + cursor-tracking glow for the biolink card
+    var biolinkCard = document.getElementById("biolink-card");
+    if (biolinkCard) {
+      biolinkCard.addEventListener("mousemove", function(e) {
+        var rect = biolinkCard.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        var centerX = rect.width / 2;
+        var centerY = rect.height / 2;
+        var rotateX = ((y - centerY) / centerY) * -9;
+        var rotateY = ((x - centerX) / centerX) * 9;
+
+        biolinkCard.style.setProperty("--mouse-x", x + "px");
+        biolinkCard.style.setProperty("--mouse-y", y + "px");
+        biolinkCard.style.transform = "perspective(1000px) rotateX(" + rotateX.toFixed(2) + "deg) rotateY(" + rotateY.toFixed(2) + "deg) scale3d(1.02, 1.02, 1.02)";
+      });
+
+      biolinkCard.addEventListener("mouseleave", function() {
+        biolinkCard.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+      });
+    }
+
+    var btnLogic = document.getElementById("nav-btn-logic");
+    var btnHomicide = document.getElementById("nav-btn-homicide");
+    var btnElijah = document.getElementById("nav-btn-elijah");
+
+    if (btnLogic) {
+      btnLogic.addEventListener("click", function (e) {
+        e.stopPropagation();
+        openBiolink();
+      });
+    }
+
+    function triggerShakeRed(elem) {
+      elem.classList.remove("shake-red");
+      void elem.offsetWidth;
+      elem.classList.add("shake-red");
+      setTimeout(function () {
+        elem.classList.remove("shake-red");
+      }, 700);
+    }
+
+    if (btnHomicide) {
+      btnHomicide.addEventListener("click", function (e) {
+        e.stopPropagation();
+        triggerShakeRed(btnHomicide);
+      });
+    }
+
+    if (btnElijah) {
+      btnElijah.addEventListener("click", function (e) {
+        e.stopPropagation();
+        triggerShakeRed(btnElijah);
+      });
+    }
+
+    // Glitched views counter in biolink
+    var glitchEl = document.getElementById("glitch-views-count");
+    var glitchSequence = ["999", "400", "763", "666", "1,337", "404", "666", "999", "821", "666"];
+    var glitchIndex = 0;
+    var glitchInterval = null;
+
+    function startGlitchViews() {
+      if (glitchInterval) clearInterval(glitchInterval);
+      glitchInterval = setInterval(function () {
+        if (!glitchEl) return;
+        glitchIndex = (glitchIndex + 1) % glitchSequence.length;
+        glitchEl.classList.add("glitching");
+        glitchEl.textContent = glitchSequence[glitchIndex];
+        setTimeout(function () {
+          if (glitchEl) glitchEl.classList.remove("glitching");
+        }, 220);
+      }, 1100);
+    }
+
+    function stopGlitchViews() {
+      if (glitchInterval) {
+        clearInterval(glitchInterval);
+        glitchInterval = null;
+      }
+    }
+
+    // Gentle snowfall
+    var snowContainer = document.getElementById("snow");
+    if (snowContainer) {
+      var flakeCount = 42;
+      for (var i = 0; i < flakeCount; i++) {
+        var flake = document.createElement("i");
+        var x = Math.random() * 100;
+        var drift = (Math.random() - 0.5) * 80;
+        var duration = 4.5 + Math.random() * 6;
+        var delay = Math.random() * 5;
+        var size = 1.5 + Math.random() * 2.5;
+        var opacity = 0.25 + Math.random() * 0.6;
+
+        flake.style.left = x + "vw";
+        flake.style.setProperty("--x", drift + "px");
+        flake.style.animationDuration = duration + "s";
+        flake.style.animationDelay = delay + "s";
+        flake.style.width = size + "px";
+        flake.style.height = size + "px";
+        flake.style.opacity = opacity;
+        snowContainer.appendChild(flake);
+      }
+    }
+
+    // Music autoplay nudge + mute toggle
+    var audioIframe = document.getElementById("audio");
+    var muteBtn = document.getElementById("mute-btn");
+    var iconSound = document.getElementById("icon-sound");
+    var iconMuted = document.getElementById("icon-muted");
+    var isMuted = false;
+    var widget = (window.SC && window.SC.Widget) ? window.SC.Widget(audioIframe) : null;
+
+    function nudge() {
+      if (audioIframe) {
+        audioIframe.src = audioIframe.src;
+      }
+      window.removeEventListener("click", nudge);
+      window.removeEventListener("keydown", nudge);
+      window.removeEventListener("touchstart", nudge);
+    }
+    window.addEventListener("click", nudge);
+    window.addEventListener("keydown", nudge);
+    window.addEventListener("touchstart", nudge);
+    nudge();
+
+    muteBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      isMuted = !isMuted;
+
+      if (isMuted) {
+        iconSound.classList.add("hidden");
+        iconMuted.classList.remove("hidden");
+        muteBtn.classList.add("is-muted");
+      } else {
+        iconSound.classList.remove("hidden");
+        iconMuted.classList.add("hidden");
+        muteBtn.classList.remove("is-muted");
+      }
+
+      if (widget) {
+        try {
+          if (isMuted) {
+            widget.setVolume(0);
+          } else {
+            widget.setVolume(100);
+            widget.play();
+          }
+        } catch (err) {
+          var vol = isMuted ? 0 : 100;
+          audioIframe.contentWindow.postMessage(JSON.stringify({ method: "setVolume", value: vol }), "*");
+        }
+      } else {
+        var vol = isMuted ? 0 : 100;
+        audioIframe.contentWindow.postMessage(JSON.stringify({ method: "setVolume", value: vol }), "*");
+      }
+    });
+  </script>
+</body>
+</html>

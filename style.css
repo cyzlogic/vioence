@@ -1,0 +1,630 @@
+:root {
+  --bg: #000000;
+  --ink: #f0f0f0;
+  --muted: #888888;
+  --dim: #555555;
+  --mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --sigil-cur: url('sigilkore.cur') 15 0, url('sigilkore_white.png') 15 0, crosshair, default;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  cursor: var(--sigil-cur) !important;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  overflow: hidden;
+  cursor: var(--sigil-cur) !important;
+}
+
+body {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ---------------- mascot background layer ---------------- */
+.mascot-layer {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.35;
+  transition: opacity 0.5s ease;
+  animation: mascotBob 6s ease-in-out infinite, mascotPulse 4s ease-in-out infinite;
+}
+
+.mascot-layer.dimmed {
+  opacity: 0;
+}
+
+.mascot-img {
+  height: clamp(340px, 56vh, 600px);
+  width: auto;
+  max-width: 90vw;
+  object-fit: contain;
+  filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.12));
+}
+
+@keyframes mascotBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+@keyframes mascotPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.08)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.05));
+  }
+  50% {
+    filter: drop-shadow(0 0 32px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.12));
+  }
+}
+
+/* ---------------- homepage hub container ---------------- */
+#hub-container {
+  position: relative;
+  z-index: 10;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
+}
+
+#hub-container.page-hidden {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.stage {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: -3vh;
+}
+
+/* Animated white to dark gradient VIOLENCE title */
+.violence-title {
+  margin: 0 0 1.8rem;
+  font-family: var(--sans);
+  font-size: clamp(3.8rem, 13vw, 8.5rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #d8d8d8 25%,
+    #666666 50%,
+    #1f1f1f 75%,
+    #ffffff 100%
+  );
+  background-size: 250% 250%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation:
+    riseTitle 1s cubic-bezier(0.16, 1, 0.3, 1) both,
+    gradientShift 6s ease-in-out infinite,
+    titleGlow 4s ease-in-out infinite;
+  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.9));
+}
+
+@keyframes riseTitle {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes titleGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.12)) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.9));
+  }
+  50% {
+    filter: drop-shadow(0 0 32px rgba(255, 255, 255, 0.28)) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.9));
+  }
+}
+
+/* Pill navigation buttons */
+.hub-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.hub-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.65);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  padding: 8px 22px;
+  border-radius: 9999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  cursor: var(--sigil-cur) !important;
+}
+
+.hub-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+}
+
+.hub-btn:active {
+  transform: translateY(0);
+}
+
+.hub-btn.shake-red {
+  animation: violent-shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+  color: #ff3344 !important;
+  border-color: #ff3344 !important;
+  box-shadow: 0 0 16px rgba(255, 51, 68, 0.4) !important;
+}
+
+@keyframes violent-shake {
+  10%, 90% { transform: translate3d(-3px, 0, 0) scale(1.02); }
+  20%, 80% { transform: translate3d(4px, 0, 0) scale(1.04); }
+  30%, 50%, 70% { transform: translate3d(-5px, 0, 0) scale(1.05); }
+  40%, 60% { transform: translate3d(5px, 0, 0) scale(1.04); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* ---------------- footer ---------------- */
+.foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1rem 1.5rem 1.4rem;
+  text-align: center;
+}
+
+.foot-brand {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  color: #b0b0b0;
+}
+
+.foot-alias {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: #888888;
+}
+
+.foot-copy {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  color: #555555;
+}
+
+/* ---------------- snow ---------------- */
+#snow {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+#snow i {
+  position: absolute;
+  top: 0;
+  display: block;
+  background: #ffffff;
+  border-radius: 50%;
+  animation: fall linear infinite;
+  will-change: transform;
+}
+
+@keyframes fall {
+  0%   { transform: translate3d(0, -10px, 0); }
+  25%  { transform: translate3d(calc(var(--x) * 0.4), 25vh, 0); }
+  50%  { transform: translate3d(calc(var(--x) * 0.15), 50vh, 0); }
+  75%  { transform: translate3d(calc(var(--x) * 0.5), 75vh, 0); }
+  100% { transform: translate3d(var(--x), 105vh, 0); }
+}
+
+/* ---------------- mute button ---------------- */
+.mute-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(14, 14, 14, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, 0.75);
+  cursor: var(--sigil-cur) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.mute-btn:hover {
+  background: rgba(28, 28, 28, 0.95);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: scale(1.08);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 255, 255, 0.15);
+}
+
+.mute-btn:active {
+  transform: scale(0.94);
+}
+
+.mute-btn.is-muted {
+  color: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.mute-icon {
+  width: 19px;
+  height: 19px;
+  pointer-events: none;
+}
+
+.mute-icon.hidden {
+  display: none;
+}
+
+/* ---------------- ghost audio ---------------- */
+.ghost {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* =========================================================
+   BIOLINK VIEW (Logic Profile)
+   ========================================================= */
+#biolink-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s;
+  background: #000000;
+  overflow: hidden;
+}
+
+#biolink-container.active {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.biolink-video-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%) brightness(0.38) contrast(1.2);
+}
+
+.biolink-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.88) 100%);
+  pointer-events: none;
+}
+
+/* Biolink Card */
+.biolink-card {
+  position: relative;
+  z-index: 5;
+  width: 90%;
+  max-width: 420px;
+  background: rgba(8, 8, 10, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  backdrop-filter: blur(26px) saturate(140%);
+  -webkit-backdrop-filter: blur(26px) saturate(140%);
+  padding: 30px 32px 22px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s ease,
+              border-color 0.35s ease,
+              opacity 0.5s ease;
+  opacity: 0;
+}
+
+/* soft cursor-tracking spotlight glow */
+.biolink-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    260px circle at var(--mouse-x) var(--mouse-y),
+    rgba(255, 255, 255, 0.14),
+    rgba(255, 255, 255, 0.04) 45%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+/* thin luminous rim that lights up near the cursor */
+.biolink-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    220px circle at var(--mouse-x) var(--mouse-y),
+    rgba(255, 255, 255, 0.85),
+    rgba(255, 255, 255, 0.10) 40%,
+    transparent 72%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.biolink-card:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.98),
+              0 0 45px rgba(255, 255, 255, 0.10),
+              inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.biolink-card:hover::before,
+.biolink-card:hover::after {
+  opacity: 1;
+}
+
+#biolink-container.active .biolink-card {
+  opacity: 1;
+  animation: card-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) translateY(22px) scale3d(0.96, 0.96, 0.96);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1000px) translateY(0) scale3d(1, 1, 1);
+  }
+}
+
+
+.biolink-back-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: var(--sigil-cur) !important;
+  transition: all 0.2s ease;
+  font-size: 13px;
+}
+
+.biolink-back-btn:hover {
+  background: rgba(255, 255, 255, 0.24);
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+.biolink-profile {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: 100%;
+}
+
+.biolink-avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+  transition: box-shadow 0.3s ease;
+}
+
+.biolink-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  filter: grayscale(100%) brightness(1.05) contrast(1.05);
+  transition: filter 0.35s ease, transform 0.35s ease;
+}
+
+.biolink-card:hover .biolink-avatar {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.75), 0 0 18px rgba(255, 255, 255, 0.22);
+}
+
+.biolink-card:hover .biolink-avatar-img {
+  filter: grayscale(0%) brightness(1.05) contrast(1.02);
+  transform: scale(1.04);
+}
+
+.biolink-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.biolink-name {
+  font-family: var(--sans);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1.1;
+  text-shadow: 0 2px 14px rgba(255, 255, 255, 0.35);
+}
+
+.shining-text {
+  background: linear-gradient(90deg, #ffffff 0%, #a0a0a0 50%, #ffffff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 3.5s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.biolink-sub {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+.biolink-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  margin-top: 24px;
+  width: 100%;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.82);
+  letter-spacing: 0.3px;
+}
+
+.biolink-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.biolink-meta-item svg {
+  width: 15px;
+  height: 15px;
+  opacity: 0.8;
+  fill: currentColor;
+}
+
+.glitch-views {
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  min-width: 48px;
+}
+
+.glitch-views.glitching {
+  color: #ffffff;
+  text-shadow: -1px 0 #888888, 1px 0 #ffffff;
+}
+
+::selection {
+  background: rgba(255, 255, 255, 0.3);
+}
