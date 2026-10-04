@@ -1,0 +1,30 @@
+# ---------------- logs ----------------
+*.log
+server.log
+server-err.log
+
+# ---------------- dev / verification screenshots ----------------
+*-shot.png
+*-shot2.png
+*-shot*.png
+screenshot*.png
+
+# ---------------- intermediate / backup work files ----------------
+*.bak
+*.orig.png
+*-clean.png
+*-transparent.png
+*-display.png
+MASCOT1.orig.png
+
+# ---------------- editor / OS cruft ----------------
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ---------------- misc build / temp ----------------
+*.tmp
+*.temp
+node_modules/

@@ -1,5 +1,7 @@
 :root {
   --bg: #000000;
+  --card-alpha: 0.74;
+  --vamp-font: var(--sans);
   --ink: #f0f0f0;
   --muted: #888888;
   --dim: #555555;
@@ -33,46 +35,6 @@ body {
   background: #000000;
   user-select: none;
   -webkit-user-select: none;
-}
-
-/* ---------------- mascot background layer ---------------- */
-.mascot-layer {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.35;
-  transition: opacity 0.5s ease;
-  animation: mascotBob 6s ease-in-out infinite, mascotPulse 4s ease-in-out infinite;
-}
-
-.mascot-layer.dimmed {
-  opacity: 0;
-}
-
-.mascot-img {
-  height: clamp(340px, 56vh, 600px);
-  width: auto;
-  max-width: 90vw;
-  object-fit: contain;
-  filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.12));
-}
-
-@keyframes mascotBob {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-8px); }
-}
-
-@keyframes mascotPulse {
-  0%, 100% {
-    filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.08)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.05));
-  }
-  50% {
-    filter: drop-shadow(0 0 32px rgba(255, 255, 255, 0.22)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.12));
-  }
 }
 
 /* ---------------- homepage hub container ---------------- */
@@ -247,31 +209,75 @@ body {
   color: #555555;
 }
 
-/* ---------------- snow ---------------- */
-#snow {
+/* ---------------- animated rain-forest background ---------------- */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #000000;
+}
+
+/* real rain-forest footage, self-hosted.
+   Source: "Gloomy forest full of trees during a rainy afternoon" (Mixkit item 22729),
+   used under the Mixkit Stock Video Free License (free for commercial + personal use,
+   no attribution required). See assets/README.md. */
+.bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 45%;
+  /* grade the footage into the black-and-white site theme and darken for legibility */
+  filter: grayscale(1) brightness(0.62) contrast(1.18) saturate(0);
+  transform: scale(1.06);
+  animation: forestDrift 70s ease-in-out infinite alternate;
+}
+
+@keyframes forestDrift {
+  from { transform: scale(1.06) translate3d(0, 0, 0); }
+  to   { transform: scale(1.12) translate3d(-1.6%, -0.8%, 0); }
+}
+
+/* slow rolling fog */
+.bg-fog {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(ellipse 55% 22% at 30% 62%, rgba(150, 168, 178, 0.075) 0%, transparent 70%),
+    radial-gradient(ellipse 48% 18% at 74% 74%, rgba(140, 158, 170, 0.06) 0%, transparent 72%),
+    radial-gradient(ellipse 70% 16% at 50% 88%, rgba(120, 138, 150, 0.05) 0%, transparent 75%);
+  filter: blur(24px);
+  animation: fogRoll 46s linear infinite alternate;
+}
+
+@keyframes fogRoll {
+  from { transform: translate3d(-4%, 1.5%, 0); }
+  to   { transform: translate3d(4%, -1.5%, 0); }
+}
+
+/* rain canvas sits above the forest, below the UI */
+#rain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  opacity: 0.72;
+}
+
+/* darkening vignette so the title always reads */
+.bg-vignette {
   position: fixed;
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  overflow: hidden;
-}
-
-#snow i {
-  position: absolute;
-  top: 0;
-  display: block;
-  background: #ffffff;
-  border-radius: 50%;
-  animation: fall linear infinite;
-  will-change: transform;
-}
-
-@keyframes fall {
-  0%   { transform: translate3d(0, -10px, 0); }
-  25%  { transform: translate3d(calc(var(--x) * 0.4), 25vh, 0); }
-  50%  { transform: translate3d(calc(var(--x) * 0.15), 50vh, 0); }
-  75%  { transform: translate3d(calc(var(--x) * 0.5), 75vh, 0); }
-  100% { transform: translate3d(var(--x), 105vh, 0); }
+  background:
+    radial-gradient(ellipse 78% 68% at 50% 46%, transparent 0%, rgba(0, 0, 0, 0.55) 72%, rgba(0, 0, 0, 0.88) 100%);
 }
 
 /* ---------------- mute button ---------------- */
@@ -338,9 +344,9 @@ body {
 }
 
 /* =========================================================
-   BIOLINK VIEW (Logic Profile)
+   BIOLINK VIEWS (Logic + Elijah)
    ========================================================= */
-#biolink-container {
+.biolink-view {
   position: fixed;
   inset: 0;
   width: 100vw;
@@ -357,7 +363,7 @@ body {
   overflow: hidden;
 }
 
-#biolink-container.active {
+.biolink-view.active {
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
@@ -372,11 +378,36 @@ body {
   filter: grayscale(100%) brightness(0.38) contrast(1.2);
 }
 
+/* elijah's footage is full-color ASCII art — keep the color, just tame it
+   so the card stays readable and it melts into the black page */
+.biolink-view[data-profile="elijah"] .biolink-video-bg {
+  /* portrait ascii art: contain (not cover) so nothing gets cropped,
+     gentle zoom drift keeps it alive without stretching */
+  object-fit: contain;
+  object-position: center center;
+  transform: scale(1.04);
+  filter: brightness(0.9) contrast(1.1) saturate(1.15);
+  animation: eliDrift 12s ease-in-out infinite alternate;
+}
+@keyframes eliDrift {
+  from { transform: scale(1.03); }
+  to   { transform: scale(1.08); }
+}
+
 .biolink-bg-overlay {
   position: absolute;
   inset: 0;
   background: radial-gradient(circle at center, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.88) 100%);
   pointer-events: none;
+}
+
+/* soft top/bottom blend so the footage melts into the page instead of
+   ending on a hard edge */
+.biolink-view[data-profile="elijah"] .biolink-bg-overlay {
+  background:
+    radial-gradient(ellipse 62% 46% at 50% 50%, rgba(0, 0, 0, 0.42) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.88) 0%, transparent 24%, transparent 76%, rgba(0, 0, 0, 0.92) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.75) 0%, transparent 18%, transparent 82%, rgba(0, 0, 0, 0.75) 100%);
 }
 
 /* Biolink Card */
@@ -385,7 +416,7 @@ body {
   z-index: 5;
   width: 90%;
   max-width: 420px;
-  background: rgba(8, 8, 10, 0.74);
+  background: rgba(8, 8, 10, var(--card-alpha, 0.74));
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 20px;
   backdrop-filter: blur(26px) saturate(140%);
@@ -406,6 +437,29 @@ body {
               border-color 0.35s ease,
               opacity 0.5s ease;
   opacity: 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.biolink-card.dragging {
+  cursor: grabbing;
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 40px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, opacity 0.5s ease;
+  z-index: 20;
+}
+
+.biolink-card.card-pop {
+  animation: cardPop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes cardPop {
+  0%   { scale: 1; }
+  35%  { scale: 0.96; }
+  65%  { scale: 1.02; }
+  100% { scale: 1; }
 }
 
 /* soft cursor-tracking spotlight glow */
@@ -459,7 +513,8 @@ body {
   opacity: 1;
 }
 
-#biolink-container.active .biolink-card {
+#biolink-container.active .biolink-card,
+#biolink-container-elijah.active .biolink-card {
   opacity: 1;
   animation: card-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -532,6 +587,16 @@ body {
   transition: filter 0.35s ease, transform 0.35s ease;
 }
 
+/* shown only if the avatar image is missing */
+.biolink-avatar.avatar-fallback {
+  font-family: var(--sans);
+  font-size: 26px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .biolink-card:hover .biolink-avatar {
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.75), 0 0 18px rgba(255, 255, 255, 0.22);
 }
@@ -549,14 +614,18 @@ body {
 
 .biolink-name {
   font-family: var(--sans);
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 800;
+  font-style: normal;
   letter-spacing: 1.5px;
-  color: #ffffff;
-  text-transform: uppercase;
+  color: #f4f4f4;
+  text-transform: none;
   margin: 0;
   line-height: 1.1;
-  text-shadow: 0 2px 14px rgba(255, 255, 255, 0.35);
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.28),
+    0 0 26px rgba(160, 0, 20, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
 .shining-text {
@@ -587,7 +656,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 26px;
+  flex-wrap: wrap;
+  row-gap: 10px;
+  column-gap: 26px;
   margin-top: 24px;
   width: 100%;
   padding-top: 16px;
@@ -623,6 +694,73 @@ body {
 .glitch-views.glitching {
   color: #ffffff;
   text-shadow: -1px 0 #888888, 1px 0 #ffffff;
+}
+
+/* card transparency slider: subtle dark, blends into footer */
+.biolink-shade {
+  display: flex;
+  align-items: center;
+  flex-basis: 100%;
+  width: 100%;
+  padding: 10px 2px 0;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  user-select: none;
+}
+
+.alpha-slider {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  flex: 1;
+  width: 100%;
+  height: 14px;
+  background: transparent !important;
+  background-image: none !important;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  color-scheme: dark;
+}
+
+.alpha-slider::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.alpha-slider::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 8px;
+  height: 8px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: #1a1a1a !important;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: none;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.alpha-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.alpha-slider::-moz-range-thumb {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: none;
+}
+
+.alpha-slider::-moz-range-track {
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.14);
 }
 
 ::selection {

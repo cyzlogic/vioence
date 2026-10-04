@@ -8,13 +8,25 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- snow overlay -->
-  <div id="snow" aria-hidden="true"></div>
-
-  <!-- mascot layer -->
-  <div class="mascot-layer" id="mascot" aria-hidden="true">
-    <img src="MASCOT1.png" alt="mascot" class="mascot-img" />
+  <!-- animated rain-forest background (footage, self-hosted) -->
+  <div class="bg-layer" aria-hidden="true">
+    <video
+      class="bg-video"
+      id="bg-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+      poster="assets/rain-forest-poster.jpg">
+      <source src="assets/rain-forest.mp4" type="video/mp4" />
+    </video>
+    <div class="bg-fog"></div>
   </div>
+  <canvas id="rain" aria-hidden="true"></canvas>
+
+  <!-- vignette to keep text readable -->
+  <div class="bg-vignette" aria-hidden="true"></div>
 
   <!-- homepage hub screen -->
   <div id="hub-container">
@@ -36,8 +48,8 @@
   </div>
 
   <!-- logic biolink screen -->
-  <div id="biolink-container" aria-hidden="true">
-    <video id="biolink-video" class="biolink-video-bg" autoplay loop muted playsinline poster="dubai-bg.jpg">
+  <div id="biolink-container" class="biolink-view" data-profile="logic" aria-hidden="true">
+    <video id="biolink-video" class="biolink-video-bg" autoplay loop muted playsinline>
       <source src="dubai-bg.mp4" type="video/mp4" />
     </video>
     <div class="biolink-bg-overlay"></div>
@@ -60,11 +72,52 @@
       <div class="biolink-meta">
         <div class="biolink-meta-item">
           <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-          <span id="glitch-views-count" class="glitch-views">999</span>
+          <span class="glitch-views" data-views="logic">999</span>
         </div>
         <div class="biolink-meta-item">
           <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
           <span>violence.cc</span>
+        </div>
+        <div class="biolink-shade">
+          <input class="alpha-slider" type="range" min="5" max="90" value="26" aria-label="Card transparency" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- elijah biolink screen -->
+  <div id="biolink-container-elijah" class="biolink-view" data-profile="elijah" aria-hidden="true">
+    <video id="biolink-video-elijah" class="biolink-video-bg" autoplay loop muted playsinline preload="auto" poster="elijah-bg-poster.jpg">
+      <source src="elijah-bg.mp4" type="video/mp4" />
+    </video>
+    <div class="biolink-bg-overlay"></div>
+
+    <div class="biolink-card" id="biolink-card-elijah">
+      <button id="biolink-close-elijah" class="biolink-back-btn" type="button" title="Back" aria-label="Back">✕</button>
+
+      <!-- Profile Header -->
+      <div class="biolink-profile">
+        <div class="biolink-avatar" aria-label="Avatar">
+          <img src="elipfp.png" alt="Elijah" class="biolink-avatar-img" />
+        </div>
+        <div class="biolink-info">
+          <h1 class="biolink-name shining-text">ELIJAH</h1>
+          <p class="biolink-sub">violence.cc</p>
+        </div>
+      </div>
+
+      <!-- Footer Metadata -->
+      <div class="biolink-meta">
+        <div class="biolink-meta-item">
+          <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+          <span class="glitch-views" data-views="elijah">999</span>
+        </div>
+        <div class="biolink-meta-item">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+          <span>violence.cc</span>
+        </div>
+        <div class="biolink-shade">
+          <input class="alpha-slider" type="range" min="5" max="90" value="26" aria-label="Card transparency" />
         </div>
       </div>
     </div>
@@ -93,57 +146,98 @@
   <script src="sc-api.js"></script>
   <script>
     var hubContainer = document.getElementById("hub-container");
-    var mascotLayer = document.getElementById("mascot");
-    var biolinkContainer = document.getElementById("biolink-container");
-    var biolinkCloseBtn = document.getElementById("biolink-close");
-    var biolinkVideo = document.getElementById("biolink-video");
 
-    function openBiolink() {
-      hubContainer.classList.add("page-hidden");
-      if (mascotLayer) mascotLayer.classList.add("dimmed");
-      biolinkContainer.classList.add("active");
-      biolinkContainer.setAttribute("aria-hidden", "false");
-      if (biolinkVideo) {
-        biolinkVideo.currentTime = 0;
-        biolinkVideo.play().catch(function () {});
+    // Each profile gets its own biolink view. Both share .biolink-view styling.
+    var profiles = {
+      logic: {
+        container: document.getElementById("biolink-container"),
+        video: document.getElementById("biolink-video"),
+        card: document.getElementById("biolink-card"),
+        closeBtn: document.getElementById("biolink-close")
+      },
+      elijah: {
+        container: document.getElementById("biolink-container-elijah"),
+        video: document.getElementById("biolink-video-elijah"),
+        card: document.getElementById("biolink-card-elijah"),
+        closeBtn: document.getElementById("biolink-close-elijah")
       }
-      startGlitchViews();
+    };
+
+    var activeProfile = null;
+
+    function resetCardPosition(card) {
+      if (!card) return;
+      card.style.position = '';
+      card.style.left = '';
+      card.style.top = '';
+      card.style.margin = '';
+      card.classList.remove('dragging', 'card-pop');
+    }
+
+    function openBiolink(name) {
+      var p = profiles[name];
+      if (!p || !p.container) return;
+      resetCardPosition(p.card);
+
+      hubContainer.classList.add("page-hidden");
+      p.container.classList.add("active");
+      p.container.setAttribute("aria-hidden", "false");
+
+      if (p.video) {
+        try { p.video.currentTime = 0; } catch (err) {}
+        p.video.play().catch(function () {});
+      }
+
+      activeProfile = name;
+      startGlitchViews(name);
     }
 
     function closeBiolink() {
-      biolinkContainer.classList.remove("active");
-      biolinkContainer.setAttribute("aria-hidden", "true");
-      hubContainer.classList.remove("page-hidden");
-      if (mascotLayer) mascotLayer.classList.remove("dimmed");
-      if (biolinkVideo) {
-        biolinkVideo.pause();
+      if (!activeProfile) return;
+      var p = profiles[activeProfile];
+      if (p && p.container) {
+        p.container.classList.remove("active");
+        p.container.setAttribute("aria-hidden", "true");
+        if (p.video) p.video.pause();
       }
+      hubContainer.classList.remove("page-hidden");
+      activeProfile = null;
       stopGlitchViews();
     }
 
-    if (biolinkCloseBtn) {
-      biolinkCloseBtn.addEventListener("click", function(e) {
-        e.stopPropagation();
-        closeBiolink();
-      });
-    }
+    // wire up each profile's close button
+    Object.keys(profiles).forEach(function (name) {
+      var btn = profiles[name].closeBtn;
+      if (btn) {
+        btn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          closeBiolink();
+        });
+      }
+    });
 
-    window.addEventListener("keydown", function(e) {
-      if (e.key === "Escape" && biolinkContainer.classList.contains("active")) {
+    window.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && activeProfile) {
         closeBiolink();
       }
     });
 
-    // Support URL param ?view=biolink or ?logic for direct screenshotting/linking
-    if (new URLSearchParams(window.location.search).has("biolink") || new URLSearchParams(window.location.search).has("logic")) {
-      openBiolink();
+    // Support URL params for direct screenshotting/linking:
+    // ?biolink / ?logic -> logic, ?elijah -> elijah
+    var params = new URLSearchParams(window.location.search);
+    if (params.has("elijah")) {
+      openBiolink("elijah");
+    } else if (params.has("biolink") || params.has("logic")) {
+      openBiolink("logic");
     }
 
-    // 3D tilt + cursor-tracking glow for the biolink card
-    var biolinkCard = document.getElementById("biolink-card");
-    if (biolinkCard) {
-      biolinkCard.addEventListener("mousemove", function(e) {
-        var rect = biolinkCard.getBoundingClientRect();
+    // 3D tilt + cursor-tracking glow, applied to whichever card is hovered
+    Object.keys(profiles).forEach(function (name) {
+      var card = profiles[name].card;
+      if (!card) return;
+
+      card.addEventListener("mousemove", function (e) {
+        var rect = card.getBoundingClientRect();
         var x = e.clientX - rect.left;
         var y = e.clientY - rect.top;
         var centerX = rect.width / 2;
@@ -151,15 +245,15 @@
         var rotateX = ((y - centerY) / centerY) * -9;
         var rotateY = ((x - centerX) / centerX) * 9;
 
-        biolinkCard.style.setProperty("--mouse-x", x + "px");
-        biolinkCard.style.setProperty("--mouse-y", y + "px");
-        biolinkCard.style.transform = "perspective(1000px) rotateX(" + rotateX.toFixed(2) + "deg) rotateY(" + rotateY.toFixed(2) + "deg) scale3d(1.02, 1.02, 1.02)";
+        card.style.setProperty("--mouse-x", x + "px");
+        card.style.setProperty("--mouse-y", y + "px");
+        card.style.transform = "perspective(1000px) rotateX(" + rotateX.toFixed(2) + "deg) rotateY(" + rotateY.toFixed(2) + "deg) scale3d(1.02, 1.02, 1.02)";
       });
 
-      biolinkCard.addEventListener("mouseleave", function() {
-        biolinkCard.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+      card.addEventListener("mouseleave", function () {
+        card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
       });
-    }
+    });
 
     var btnLogic = document.getElementById("nav-btn-logic");
     var btnHomicide = document.getElementById("nav-btn-homicide");
@@ -168,7 +262,7 @@
     if (btnLogic) {
       btnLogic.addEventListener("click", function (e) {
         e.stopPropagation();
-        openBiolink();
+        openBiolink("logic");
       });
     }
 
@@ -191,25 +285,33 @@
     if (btnElijah) {
       btnElijah.addEventListener("click", function (e) {
         e.stopPropagation();
-        triggerShakeRed(btnElijah);
+        openBiolink("elijah");
       });
     }
 
-    // Glitched views counter in biolink
-    var glitchEl = document.getElementById("glitch-views-count");
+    // Glitched views counter, per profile
     var glitchSequence = ["999", "400", "763", "666", "1,337", "404", "666", "999", "821", "666"];
     var glitchIndex = 0;
     var glitchInterval = null;
+    var glitchEls = {};
 
-    function startGlitchViews() {
+    Object.keys(profiles).forEach(function (name) {
+      var el = profiles[name].container
+        ? profiles[name].container.querySelector('.glitch-views[data-views="' + name + '"]')
+        : null;
+      if (el) glitchEls[name] = el;
+    });
+
+    function startGlitchViews(name) {
       if (glitchInterval) clearInterval(glitchInterval);
+      var el = glitchEls[name];
+      if (!el) return;
       glitchInterval = setInterval(function () {
-        if (!glitchEl) return;
         glitchIndex = (glitchIndex + 1) % glitchSequence.length;
-        glitchEl.classList.add("glitching");
-        glitchEl.textContent = glitchSequence[glitchIndex];
+        el.classList.add("glitching");
+        el.textContent = glitchSequence[glitchIndex];
         setTimeout(function () {
-          if (glitchEl) glitchEl.classList.remove("glitching");
+          el.classList.remove("glitching");
         }, 220);
       }, 1100);
     }
@@ -221,29 +323,245 @@
       }
     }
 
-    // Gentle snowfall
-    var snowContainer = document.getElementById("snow");
-    if (snowContainer) {
-      var flakeCount = 42;
-      for (var i = 0; i < flakeCount; i++) {
-        var flake = document.createElement("i");
-        var x = Math.random() * 100;
-        var drift = (Math.random() - 0.5) * 80;
-        var duration = 4.5 + Math.random() * 6;
-        var delay = Math.random() * 5;
-        var size = 1.5 + Math.random() * 2.5;
-        var opacity = 0.25 + Math.random() * 0.6;
+    // ---------------- animated rain (canvas) ----------------
+    var rainCanvas = document.getElementById("rain");
+    if (rainCanvas && rainCanvas.getContext) {
+      var rctx = rainCanvas.getContext("2d");
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var RW = 0, RH = 0;
+      var drops = [];
+      var splashes = [];
+      var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-        flake.style.left = x + "vw";
-        flake.style.setProperty("--x", drift + "px");
-        flake.style.animationDuration = duration + "s";
-        flake.style.animationDelay = delay + "s";
-        flake.style.width = size + "px";
-        flake.style.height = size + "px";
-        flake.style.opacity = opacity;
-        snowContainer.appendChild(flake);
+      // angle: rain falls down-right; wind pushes it across
+      var ANGLE = 0.20;
+      var WIND = 0.55;
+
+      function sizeRain() {
+        RW = window.innerWidth;
+        RH = window.innerHeight;
+        rainCanvas.width = Math.floor(RW * dpr);
+        rainCanvas.height = Math.floor(RH * dpr);
+        rainCanvas.style.width = RW + "px";
+        rainCanvas.style.height = RH + "px";
+        rctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        buildDrops();
+      }
+
+      function buildDrops() {
+        // density scales with viewport, but capped for perf
+        var count = Math.min(Math.floor((RW * RH) / 5200), 620);
+        drops = [];
+        for (var i = 0; i < count; i++) {
+          drops.push(makeDrop(true));
+        }
+      }
+
+      function makeDrop(spread) {
+        // three depth tiers: near = faster/longer/brighter
+        var tier = Math.random();
+        var speed, len, alpha, thick;
+        if (tier > 0.82) {          // near
+          speed = 15 + Math.random() * 9;
+          len   = 26 + Math.random() * 26;
+          alpha = 0.42 + Math.random() * 0.32;
+          thick = 1.5;
+        } else if (tier > 0.45) {   // mid
+          speed = 10 + Math.random() * 6;
+          len   = 16 + Math.random() * 18;
+          alpha = 0.24 + Math.random() * 0.24;
+          thick = 1.1;
+        } else {                    // far
+          speed = 6 + Math.random() * 4;
+          len   = 9 + Math.random() * 12;
+          alpha = 0.10 + Math.random() * 0.16;
+          thick = 0.8;
+        }
+        return {
+          x: Math.random() * (RW + 220) - 110,
+          y: spread ? Math.random() * RH : -len - Math.random() * 90,
+          len: len,
+          speed: speed,
+          alpha: alpha,
+          thick: thick
+        };
+      }
+
+      function spawnSplash(x, y) {
+        if (splashes.length > 90) return;
+        splashes.push({ x: x, y: y, r: 0.6, life: 1 });
+      }
+
+      var flashAlpha = 0;
+      var nextFlash = 260 + Math.random() * 620;
+
+      function drawRain() {
+        rctx.clearRect(0, 0, RW, RH);
+
+        // lightning flash wash
+        if (flashAlpha > 0.004) {
+          rctx.fillStyle = "rgba(180, 200, 220," + (flashAlpha * 0.16).toFixed(3) + ")";
+          rctx.fillRect(0, 0, RW, RH);
+        }
+
+        rctx.lineCap = "round";
+
+        for (var i = 0; i < drops.length; i++) {
+          var d = drops[i];
+
+          var dx = d.len * Math.sin(ANGLE);
+          var dy = d.len * Math.cos(ANGLE);
+
+          rctx.beginPath();
+          rctx.strokeStyle = "rgba(198, 214, 226, " + d.alpha.toFixed(3) + ")";
+          rctx.lineWidth = d.thick;
+          rctx.moveTo(d.x, d.y);
+          rctx.lineTo(d.x + dx, d.y + dy);
+          rctx.stroke();
+
+          d.y += d.speed;
+          d.x += d.speed * WIND * 0.5;
+
+          if (d.y > RH + 30 || d.x > RW + 140) {
+            // occasional splash where a near drop hits "the ground"
+            if (d.speed > 16 && d.y > RH - 40) spawnSplash(d.x, RH - Math.random() * 26);
+            var nd = makeDrop(false);
+            d.x = nd.x;
+            d.y = nd.y;
+            d.len = nd.len;
+            d.speed = nd.speed;
+            d.alpha = nd.alpha;
+            d.thick = nd.thick;
+          }
+        }
+
+        // splash rings
+        for (var s = splashes.length - 1; s >= 0; s--) {
+          var sp = splashes[s];
+          sp.r += 0.55;
+          sp.life -= 0.045;
+          if (sp.life <= 0) { splashes.splice(s, 1); continue; }
+          rctx.beginPath();
+          rctx.strokeStyle = "rgba(190, 208, 222, " + (sp.life * 0.20).toFixed(3) + ")";
+          rctx.lineWidth = 1;
+          rctx.ellipse(sp.x, sp.y, sp.r * 1.8, sp.r * 0.5, 0, 0, Math.PI * 2);
+          rctx.stroke();
+        }
+
+        // decay flash
+        if (flashAlpha > 0) flashAlpha *= 0.90;
+
+        nextFlash -= 1;
+        if (nextFlash <= 0) {
+          flashAlpha = 0.55 + Math.random() * 0.45;
+          nextFlash = 420 + Math.random() * 900;
+        }
+
+        requestAnimationFrame(drawRain);
+      }
+
+      sizeRain();
+      window.addEventListener("resize", sizeRain);
+
+      if (reduced) {
+        // honour reduced-motion: one static frame, no loop
+        rctx.clearRect(0, 0, RW, RH);
+      } else {
+        requestAnimationFrame(drawRain);
       }
     }
+
+    // Draggable biolink cards + click pop effect.
+    // Drag from anywhere on the card except the X button; a clean
+    // click (no drag) triggers a bounce pop. Touch supported.
+    // Position resets to center every time a profile is opened.
+    function makeCardDraggable(card, closeBtn) {
+      if (!card || card.dataset.draggable === '1') return;
+      card.dataset.draggable = '1';
+      var dragging = false;
+      var moved = 0;
+      var startX = 0, startY = 0, baseX = 0, baseY = 0;
+
+      function clampCard(x, y) {
+        var pad = 12;
+        var maxX = Math.max(pad, window.innerWidth - card.offsetWidth - pad);
+        var maxY = Math.max(pad, window.innerHeight - card.offsetHeight - pad);
+        return {
+          x: Math.min(Math.max(x, pad), maxX),
+          y: Math.min(Math.max(y, pad), maxY)
+        };
+      }
+
+      card.addEventListener('pointerdown', function (e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        if (closeBtn && (e.target === closeBtn || closeBtn.contains(e.target))) return;
+        if (e.target.closest && e.target.closest('select, input, textarea, a, button')) return;
+        dragging = true;
+        moved = 0;
+        var r = card.getBoundingClientRect();
+        startX = e.clientX;
+        startY = e.clientY;
+        baseX = r.left;
+        baseY = r.top;
+        // pin to viewport coords for free movement
+        card.style.position = 'fixed';
+        card.style.left = baseX + 'px';
+        card.style.top = baseY + 'px';
+        card.style.margin = '0';
+        card.classList.add('dragging');
+        try { card.setPointerCapture(e.pointerId); } catch (err) {}
+        e.preventDefault();
+      });
+
+      card.addEventListener('pointermove', function (e) {
+        if (!dragging) return;
+        var dx = e.clientX - startX;
+        var dy = e.clientY - startY;
+        moved = Math.max(moved, Math.abs(dx) + Math.abs(dy));
+        var p = clampCard(baseX + dx, baseY + dy);
+        card.style.left = p.x + 'px';
+        card.style.top = p.y + 'px';
+      });
+
+      function endDrag(e) {
+        if (!dragging) return;
+        dragging = false;
+        card.classList.remove('dragging');
+        if (moved < 6) {
+          // clean click -> pop bounce
+          card.classList.remove('card-pop');
+          void card.offsetWidth;
+          card.classList.add('card-pop');
+          setTimeout(function () { card.classList.remove('card-pop'); }, 420);
+        }
+      }
+
+      card.addEventListener('pointerup', endDrag);
+      card.addEventListener('pointercancel', endDrag);
+    }
+
+    makeCardDraggable(profiles.logic.card, profiles.logic.closeBtn);
+    makeCardDraggable(profiles.elijah.card, profiles.elijah.closeBtn);
+
+    // Card transparency slider: higher = MORE see-through.
+    // --card-alpha stays the tint opacity (1 = solid, 0 = invisible),
+    // so transparency t = slider/100 maps to alpha = 1 - t.
+    (function () {
+      function applyAlpha(v, save) {
+        var n = parseInt(v, 10);
+        if (isNaN(n)) n = 26;
+        n = Math.min(90, Math.max(5, n));
+        document.documentElement.style.setProperty('--card-alpha', (1 - n / 100).toFixed(2));
+        document.querySelectorAll('.alpha-slider').forEach(function (el) { el.value = String(n); });
+        if (save !== false) { try { localStorage.setItem('bio-card-alpha', String(n)); } catch (e) {} }
+      }
+      var saved = null;
+      try { saved = localStorage.getItem('bio-card-alpha'); } catch (e) {}
+      if (saved) applyAlpha(saved, false);
+      document.querySelectorAll('.alpha-slider').forEach(function (sl) {
+        sl.addEventListener('input', function () { applyAlpha(sl.value, true); });
+      });
+    })();
 
     // Music autoplay nudge + mute toggle
     var audioIframe = document.getElementById("audio");
