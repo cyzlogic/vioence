@@ -37,7 +37,20 @@ body {
   -webkit-user-select: none;
 }
 
-/* ---------------- homepage hub container ---------------- */
+/* page hide transition (JS toggles .page-hidden on #hub-container) */
+#hub-container.page-hidden {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.4s;
+}
+
+/* =========================================================
+   HOMEPAGE - COMING SOON (full-page takeover)
+   ========================================================= */
 #hub-container {
   position: relative;
   z-index: 10;
@@ -47,14 +60,9 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
-}
-
-#hub-container.page-hidden {
-  opacity: 0;
-  transform: scale(0.96);
-  pointer-events: none;
-  visibility: hidden;
+  background: transparent;
+  overflow: hidden;
+  padding: 0;
 }
 
 .stage {
@@ -63,102 +71,120 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 1.5rem;
-  margin-top: -3vh;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
 }
 
-/* Animated white to dark gradient VIOLENCE title */
-.violence-title {
-  margin: 0 0 1.8rem;
-  font-family: var(--sans);
-  font-size: clamp(3.8rem, 13vw, 8.5rem);
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    #d8d8d8 25%,
-    #666666 50%,
-    #1f1f1f 75%,
-    #ffffff 100%
-  );
-  background-size: 250% 250%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation:
-    riseTitle 1s cubic-bezier(0.16, 1, 0.3, 1) both,
-    gradientShift 6s ease-in-out infinite,
-    titleGlow 4s ease-in-out infinite;
-  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.9));
-}
-
-/* ---------------- homepage logo + Coming Soon ---------------- */
 .home-hero {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.2rem;
+  gap: 2.6rem;
+  width: 100%;
+  max-width: 860px;
+  padding: 2rem;
+  animation: heroIn 1s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.home-logo {
-  width: clamp(120px, 22vw, 220px);
-  height: auto;
-  max-height: 22vh;
-  display: block;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.7));
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.home-logo:hover {
-  transform: scale(1.06) rotate(-2deg);
-}
-
-.home-coming {
-  margin: 0.55rem 0 0 0;
-  font-family: var(--mono);
-  font-size: clamp(0.95rem, 2.4vw, 1.35rem);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: rgba(255, 100, 100, 0.85);
-  text-transform: uppercase;
-  text-shadow: 0 0 24px rgba(255, 60, 60, 0.25), 0 2px 8px rgba(0, 0, 0, 0.7);
-  animation: pulseDot 2.8s ease-in-out infinite;
-}
-
-@keyframes pulseDot {
-  0%, 100% {
-    opacity: 0.55;
-    text-shadow: 0 0 18px rgba(255, 60, 60, 0.18);
-  }
-  50% {
-    opacity: 1;
-    text-shadow: 0 0 34px rgba(255, 60, 60, 0.42), 0 2px 8px rgba(0, 0, 0, 0.7);
-  }
-}
-
-@keyframes riseTitle {
-  from { opacity: 0; transform: translateY(18px); }
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(22px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes gradientShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* -- Coming Soon: animated white-black-purple/red gradient -- */
+.home-coming {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(2.2rem, 7.5vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-indent: 0.14em;
+  text-transform: uppercase;
+  background: linear-gradient(
+    100deg,
+    #ffffff 0%,
+    #1a1a1a 20%,
+    #7b2ff7 40%,
+    #ff2d55 55%,
+    #1a1a1a 72%,
+    #ffffff 100%
+  );
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  padding-bottom: 1.3rem;
+  animation: comingGradient 7s linear infinite;
 }
 
-@keyframes titleGlow {
-  0%, 100% {
-    filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.12)) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.9));
-  }
-  50% {
-    filter: drop-shadow(0 0 32px rgba(255, 255, 255, 0.28)) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.9));
-  }
+@keyframes comingGradient {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 260% 50%; }
+}
+
+.home-coming::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: clamp(90px, 22vw, 180px);
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(220, 60, 60, 0.9), transparent);
+  box-shadow: 0 0 18px rgba(220, 60, 60, 0.5);
+}
+
+/* -- small bottom watermark -- */
+.home-watermark {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: rgba(220, 220, 220, 0.32);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+  z-index: 20;
+  white-space: nowrap;
+}
+
+/* -- Violence Forums logo (centered) -- */
+.home-brand-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.2rem, 3vw, 2rem);
+  padding: 0.5rem;
+}
+
+.home-brand-row .home-logo {
+  width: clamp(140px, 30vw, 280px);
+  height: auto;
+  max-height: 30vh;
+  display: block;
+  /* blend into the forest: soft pink glow instead of a hard drop-shadow box */
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 22px rgba(214, 77, 128, 0.28));
+  opacity: 0.94;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease, opacity 0.5s ease;
+}
+
+.home-brand-row .home-logo:hover {
+  transform: scale(1.04);
+  opacity: 1;
+  filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 34px rgba(214, 77, 128, 0.45));
 }
 
 /* Pill navigation buttons */
@@ -275,8 +301,8 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center 45%;
-  /* grade the footage into the black-and-white site theme and darken for legibility */
-  filter: grayscale(1) brightness(0.62) contrast(1.18) saturate(0);
+  /* grade the footage into a moody forest theme and darken for legibility */
+  filter: grayscale(0.55) brightness(0.5) contrast(1.2) sepia(0.25) hue-rotate(58deg) saturate(1.1);
   transform: scale(1.06);
   animation: forestDrift 70s ease-in-out infinite alternate;
 }
